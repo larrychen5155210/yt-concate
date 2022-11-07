@@ -1,4 +1,4 @@
-
+import time
 
 from pytube import YouTube
 from bs4 import BeautifulSoup
@@ -9,17 +9,30 @@ from .step import StepException
 
 class DownloadCaptions(Step):
     def process(self, data, inputs, utils):
+        start = time.time()
         for url in data:
-            source = YouTube(url)
-            en_caption = source.captions.get_by_language_code('a.en')
-            xml = en_caption.xml_captions
-            en_caption_srt =self.xml2srt(xml)
-            print(en_caption_srt)
+            print('downloading caption for', url)
+            if utils.caption_file_exists(url):
+                print('found existing caption file')
+                continue
+            try:
+                source = YouTube(url)
+                en_caption = source.captions.get_by_language_code('a.en')
+                xml = en_caption.xml_captions
+                en_caption_srt =self.xml2srt(xml)
+                # print(en_caption_srt)
+            except AttributeError:
+                print('AttributeError when downloading caption for', url)
+                continue
 
-            text_file = open(utils.get_caption_path(url), "w")
+            text_file = open(utils.get_caption_filepath(url), "w", encoding='utf-8')
             text_file.write(en_caption_srt)
             text_file.close()
-            break
+
+        end = time.time()
+        print('took', end-start, 'seconds')
+
+
 
     @staticmethod
     def xml2srt(text):

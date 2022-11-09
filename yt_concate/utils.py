@@ -25,3 +25,7 @@ class Utils:
     def caption_file_exists(self, yt):
         path = yt.get_caption_filepath()
         return os.path.exists(path) and os.path.getsize(path) > 0
+
+    def video_file_exists(self, yt):
+        path = yt.get_video_filepath()
+        return os.path.exists(path) and os.path.getsize(path) > 0

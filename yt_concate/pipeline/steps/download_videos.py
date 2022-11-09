@@ -18,3 +18,5 @@ class DownloadVideos(Step):
             print('downloading', url)
             YouTube(url).streams.get_highest_resolution().download(output_path=VIDEOS_DIR, filename=yt.id + '.mp4' )
             print(url, 'download completed')
+
+        return data

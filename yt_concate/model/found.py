@@ -6,7 +6,7 @@ class Found:
         self.time = time
 
     def __str__(self):
-        return  '<Found(yt=' + self.yt + ')>'
+        return  '<Found(yt=' + str(self.yt) + ')>'
 
     def __repr__(self):
         content = ','.join([

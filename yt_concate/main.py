@@ -26,10 +26,10 @@ def main():
         GetVideoList(),
         InitializeYT(),
         DownloadCaptions(),
-        ReadCaption(),
-        SearchCaption(),
-        DownloadVideos(),
-        EditVideos(),
+        # ReadCaption(),
+        # SearchCaption(),
+        # DownloadVideos(),
+        # EditVideos(),
         Postflight(),
     ]
 

@@ -1,4 +1,7 @@
+import os
 import time
+from threading import Thread
+from multiprocessing import Process
 
 from pytube import YouTube
 from bs4 import BeautifulSoup
@@ -8,31 +11,77 @@ from .step import StepException
 
 
 class DownloadCaptions(Step):
+    # def process(self, data, inputs, utils):
+    #     start = time.time()
+    #     for yt in data:
+    #         print('downloading caption for', yt.id)
+    #         if utils.caption_file_exists(yt):
+    #             print('found existing caption file')
+    #             continue
+    #         try:
+    #             source = YouTube(yt.url)
+    #             en_caption = source.captions.get_by_language_code('a.en')
+    #             xml = en_caption.xml_captions
+    #             en_caption_srt = self.xml2srt(xml)
+    #
+    #         except AttributeError:
+    #             print('AttributeError when downloading caption for', yt.url)
+    #             continue
+    #
+    #         text_file = open(yt.get_caption_filepath(), "w", encoding='utf-8')
+    #         text_file.write(en_caption_srt)
+    #         text_file.close()
+    #
+    #     end = time.time()
+    #     print('took', end-start, 'seconds')
+    #
+    #     return data
+
     def process(self, data, inputs, utils):
         start = time.time()
-        for yt in data:
-            print('downloading caption for', yt.id)
-            if utils.caption_file_exists(yt):
-                print('found existing caption file')
-                continue
-            try:
+        threads_num = os.cpu_count()
+        data_equla_parts = self.func(data, threads_num)
+        threads = []
+
+        for core in range(threads_num):
+            threads.append(Thread(target=self.download(data_equla_parts[core])))
+        print(threads)
+        if __name__ == '__main__':
+            for thread in threads:
+                thread.start()
+
+            for thread in threads:
+                thread.join()
+
+        end = time.time()
+        print('took', end - start, 'seconds')
+
+        return data
+
+    def download(self, sub_data):
+        try:
+            for yt in sub_data:
                 source = YouTube(yt.url)
                 en_caption = source.captions.get_by_language_code('a.en')
                 xml = en_caption.xml_captions
                 en_caption_srt =self.xml2srt(xml)
-                # print(en_caption_srt)
-            except AttributeError:
-                print('AttributeError when downloading caption for', yt.url)
-                continue
+                text_file = open(yt.get_caption_filepath(), "w", encoding='utf-8')
+                text_file.write(en_caption_srt)
+                text_file.close()
 
-            text_file = open(yt.get_caption_filepath(), "w", encoding='utf-8')
-            text_file.write(en_caption_srt)
-            text_file.close()
+        except AttributeError:
+            print('AttributeError when downloading caption for', yt.url)
 
-        end = time.time()
-        print('took', end-start, 'seconds')
+    @staticmethod
+    def func(data, n):
+        count = (len(data) // n) + 1
+        data_equla_parts = []
+        for i in range(0, len(data), count):
+            data_equla_parts.append(data[i:i + count])
 
-        return data
+        return data_equla_parts
+
+
 
 
 

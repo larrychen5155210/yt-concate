@@ -17,6 +17,6 @@ class SearchCaption(Step):
                     f = Found(yt, caption, time)
                     found.append(f)
         print(found)
-        print('found', len(found), 'slap in captions')
+        print('found', len(found), inputs['search_word'], 'in captions')
         return found
 

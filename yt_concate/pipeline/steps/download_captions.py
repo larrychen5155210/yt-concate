@@ -1,6 +1,7 @@
 import os
 import time
 from threading import Thread
+from multiprocessing import Process
 
 from pytube import YouTube
 from bs4 import BeautifulSoup
@@ -15,15 +16,26 @@ class DownloadCaptions(Step):
         threads_num = os.cpu_count()
         data_equla_parts = self.func(data, threads_num)
         threads = []
+        processes = []
+        # for core in range(threads_num):
+        #     print('registering thread %d' % core)
+        #     threads.append(Thread(target=self.download, args=(data_equla_parts[core], utils)))
+        #
+        # for thread in threads:
+        #     thread.start()
+        #
+        # for thread in threads:
+        #     thread.join()
+
         for core in range(threads_num):
-            print('registering thread %d' % core)
-            threads.append(Thread(target=self.download, args=(data_equla_parts[core], utils)))
+            print('registering process %d' % core)
+            processes.append(Process(target=self.download, args=(data_equla_parts[core], utils)))
 
-        for thread in threads:
-            thread.start()
+        for process in processes:
+            process.start()
 
-        for thread in threads:
-            thread.join()
+        for process in processes:
+            process.join()
 
         end = time.time()
         print('took', end - start, 'seconds')

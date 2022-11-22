@@ -1,5 +1,6 @@
 import getopt
 import sys
+import time
 
 from yt_concate.pipeline.steps.preflight import Preflight
 from yt_concate.pipeline.steps.get_video_list import GetVideoList
@@ -59,14 +60,17 @@ def main():
         DownloadCaptions(),
         ReadCaption(),
         SearchCaption(),
-        # DownloadVideos(),
-        # EditVideos(),
+        DownloadVideos(),
+        EditVideos(),
         Postflight(),
     ]
 
     utils = Utils()
     p = Pipeline(steps)
+    start = time.time()
     p.run(inputs, utils)
+    end = time.time()
+    print('Took', end - start, 'seconds to run all steps')
 
 
 if __name__ == '__main__':

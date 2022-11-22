@@ -29,7 +29,7 @@ class DownloadCaptions(Step):
 
         for core in range(threads_num):
             print('registering process %d' % core)
-            processes.append(Process(target=self.download, args=(data_equla_parts[core], utils)))
+            processes.append(Process(target=self.download_captions, args=(data_equla_parts[core], utils)))
 
         for process in processes:
             process.start()
@@ -38,11 +38,11 @@ class DownloadCaptions(Step):
             process.join()
 
         end = time.time()
-        print('took', end - start, 'seconds')
+        print('Took', end - start, 'seconds to download captions')
 
         return data
 
-    def download(self, sub_data, utils):
+    def download_captions(self, sub_data, utils):
         for yt in sub_data:
             print('downloading caption for', yt.id)
             if utils.caption_file_exists(yt):
